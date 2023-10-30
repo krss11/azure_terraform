@@ -30,8 +30,19 @@ jobs:
       id: validate
       run: terraform validate
     - name: Terraform Plan
-      id: plan
-      run: terraform plan
+      id: tf-plan
+      run: |
+        export exitcode=0
+        terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
+
+        echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+        
+        if [ $exitcode -eq 1 ]; then
+          echo Terraform Plan Failed!
+          exit 1
+        else 
+          exit 0
+        fi
     - name: Publish Terraform Plan
       uses: actions/upload-artifact@v3
       with:
