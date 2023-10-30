@@ -1,0 +1,24 @@
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  AZURE_CONTAINER_REGISTRY: "azurecontainerkrss"
+  CONTAINER_NAME: "springboot-appe"
+  RESOURCE_GROUP: "azure-terraform-rg"
+  CLUSTER_NAME: "azureakskrss"
+  DEPLOYMENT_MANIFEST_PATH: "aks-deploy-from-acr.yaml"
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Log in with Azure
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
