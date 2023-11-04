@@ -24,6 +24,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 }
 
-output "cluster_name" {
+output "kubeconfig" {
   value = azurerm_kubernetes_cluster.aks.kube_config.0.client_config[0].kube_config
+}
+output "cluster_name" {
+  value = azurerm_kubernetes_cluster.aks.name
 }
