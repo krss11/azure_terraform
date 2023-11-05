@@ -17,14 +17,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Log in with Azure
-      uses: azure/login@v1
-      with:
-        creds: '${{ secrets.AZURE_CREDENTIALS }}'
-    - uses: hashicorp/setup-terraform@v2
+    - name: checkout code
+      uses: actions/checkout@v3
+    #- name: Log in with Azure
+    #  uses: azure/login@v1
+    #  with:
+    #    creds: '${{ secrets.AZURE_CREDENTIALS }}'
+    - name: set up Terraform
+      uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: "1.1.7"
+        cli_config_credentials_token: ${{ secrets.AZURE_CREDENTIALS }}
     - run: terraform init
     - name: Terraform Validate
       id: validate
