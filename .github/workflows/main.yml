@@ -57,6 +57,7 @@ jobs:
 
       - name: Terraform Output
         run: terraform output
+        
 
       #- name: Deploy Application
       #  run: |
