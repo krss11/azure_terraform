@@ -20,11 +20,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
   identity {
     type = "SystemAssigned"
   }
-  #service_principal  {
-  #  client_id = "98802061-a5ad-41c4-b8f5-57129928fe98"
-  #  client_secret = "YqI8Q~6dKJq7olh5Xtyh4c4ihVpCUjAEqCSt5ctx"
+  service_principal  {
+    client_id = "04ee7578-aff2-4cc1-8886-db4d3363ee5d"
+    client_secret = "oX68Q~ghruRuuByQxY2NfRA6PqSG3Dym6iaX7cxT"
     
-  #}
+  }
 
   tags = {
     environment = "dev"
