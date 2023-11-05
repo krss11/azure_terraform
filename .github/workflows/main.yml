@@ -20,7 +20,7 @@ jobs:
       with:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
     - name: set up Terraform
-      uses: hashicorp/setup-terraform@v2
+      uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: "1.1.7"
        # cli_config_credentials_token: ${{ secrets.AZURE_CREDENTIALS1 }}
