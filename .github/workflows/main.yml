@@ -22,7 +22,7 @@ jobs:
     - name: set up Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-        terraform_version: "1.1.6"
+        terraform_version: latest
        # cli_config_credentials_token: ${{ secrets.AZURE_CREDENTIALS1 }}
     - run: terraform init
     - name: Terraform Validate
