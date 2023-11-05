@@ -17,14 +17,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
     node_count          = 1
     vm_size             = "Standard_DS2_v2"
   }
-  identity {
-    type = "SystemAssigned"
-  }
-  #service_principal  {
-  #  client_id = "04ee7578-aff2-4cc1-8886-db4d3363ee5d"
-  #  client_secret = "oX68Q~ghruRuuByQxY2NfRA6PqSG3Dym6iaX7cxT"
+  #identity {
+   # type = "SystemAssigned"
+  #}
+  service_principal  {
+    client_id = "2f791644-dc40-414a-ba2b-877130f949f2"
+    client_secret = "2e84aee6-5172-4180-9b10-711c323a67e8"
 
- # }
+ }
 
   tags = {
     environment = "dev"
