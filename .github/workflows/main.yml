@@ -4,12 +4,12 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  AZURE_CONTAINER_REGISTRY: "azurecontainerkrss"
-  CONTAINER_NAME: "springboot-appe"
-  RESOURCE_GROUP: "azure-terraform-rg"
-  CLUSTER_NAME: "azureakskrss"
-  DEPLOYMENT_MANIFEST_PATH: "aks-deploy-from-acr.yaml"
+#env:
+ # AZURE_CONTAINER_REGISTRY: "azurecontainerkrss"
+ # CONTAINER_NAME: "springboot-appe"
+ # RESOURCE_GROUP: "azure-terraform-rg"
+ # CLUSTER_NAME: "azureakskrss"
+ #  DEPLOYMENT_MANIFEST_PATH: "aks-deploy-from-acr.yaml"
 
 jobs:
   build:
