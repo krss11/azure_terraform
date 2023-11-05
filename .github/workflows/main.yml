@@ -1,61 +1,61 @@
+name: Create Azure AKS With Terraform
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
-#env:
- # AZURE_CONTAINER_REGISTRY: "azurecontainerkrss"
- # CONTAINER_NAME: "springboot-appe"
- # RESOURCE_GROUP: "azure-terraform-rg"
- # CLUSTER_NAME: "azureakskrss"
- #  DEPLOYMENT_MANIFEST_PATH: "aks-deploy-from-acr.yaml"
-
-jobs:
-  build:
-
+permissions:
+      id-token: write
+      contents: read
+jobs: 
+  AKS-Cluster-Deployment:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        shell: bash
+        working-directory: AKS
     steps:
-    - name: checkout code
-      uses: actions/checkout@v3
-    - name: Log in with Azure
-      uses: azure/login@v1
-      with:
-        creds: '${{ secrets.AZURE_CREDENTIALS }}'
-    #- name: set up Terraform
-     # uses: hashicorp/setup-terraform@v2
-     # with:
-     #   terraform_version: "1.1.7"
-       # cli_config_credentials_token: ${{ secrets.AZURE_CREDENTIALS1 }}
-    - run: terraform init
-    - name: Terraform Validate
-      id: validate
-      run: terraform validate
-    - name: Terraform Plan
-      id: tf-plan
-      run: |
-        export exitcode=0
-        terraform plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
-
-        echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+      - name: Checkout
+        uses: actions/checkout@v3.1.0
         
-        if [ $exitcode -eq 1 ]; then
-          echo Terraform Plan Failed!
-          exit 1
-        else 
-          exit 0
-        fi
-    - name: Publish Terraform Plan
-      uses: actions/upload-artifact@v3
-      with:
-        name: tfplan
-        path: tfplan
-    - name: Download Terraform Plan
-      uses: actions/download-artifact@v3
-      with:
-        name: tfplan
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.2
+        with:
+          terraform_version: latest
+          cli_config_credentials_token: ${{ secrets.TFC_TOKEN_ID }}
 
-    # Terraform Apply
-    - name: Terraform Apply
-      run: terraform apply -auto-approve tfplan
+      - name: Terraform Init
+        id: init
+        run: terraform init
+      
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan
+        continue-on-error: true
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      - name: Terraform Output
+        run: terraform output
+
+      #- name: Deploy Application
+      #  run: |
+      #    az aks get-credentials -n "cluster-bursting-jennet" -g "rg-refined-swine"
+      #    kubectl apply -f ./AKSApp/aks-store-quickstart.yaml
+      #    sleep 40
+      #    kubectl get service store-front
+      #    rm -rf ~/.kube
