@@ -26,9 +26,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
  }
 
-  tags = {
-    environment = "dev"
-  }
+  #tags = {
+  #  environment = "dev"
+  #}
 }
 
 #output "kubeconfig" {
