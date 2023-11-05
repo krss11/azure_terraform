@@ -1,7 +1,6 @@
 name: Create Azure AKS With Terraform
 on:
   workflow_dispatch:
-
 permissions:
       id-token: write
       contents: read
@@ -11,20 +10,15 @@ jobs:
     defaults:
       run:
         shell: bash
+        working-directory: AKS
     steps:
-      - name: checkout code
-        uses: actions/checkout@v3
-      - name: Log in with Azure
+      - name: Checkout
+        uses: actions/checkout@v3.1.0
+
+      - name: 'Az CLI login'
         uses: azure/login@v1
         with:
           creds: '${{ secrets.AZURE_CREDENTIALS }}'
-      #- name: Checkout
-       # uses: actions/checkout@v3.1.0
-        
-      #- name: 'Az CLI login'
-      #  uses: azure/login@v1
-      #  with:
-      #   creds: '${{ secrets.AZURE_CREDENTIALS }}'
           #client-id: ${{ secrets.AZURE_CLIENT_ID }}
           #tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           #subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -34,7 +28,6 @@ jobs:
         with:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFC_TOKEN_ID }}
-
       - name: Terraform Init
         id: init
         run: terraform init
@@ -42,23 +35,17 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate
-
       - name: Terraform Plan
         id: plan
         run: terraform plan
         continue-on-error: true
-
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
-
       - name: Terraform Apply
         run: terraform apply -auto-approve
-
       - name: Terraform Output
         run: terraform output
-        
-
       #- name: Deploy Application
       #  run: |
       #    az aks get-credentials -n "cluster-bursting-jennet" -g "rg-refined-swine"
