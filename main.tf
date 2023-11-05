@@ -1,39 +1,45 @@
-provider "azurerm" {
-  features {}
-}
-resource "azurerm_resource_group" "aks-rg" {
-  name     = "myResourceGroup"
-  location = "East US"
+# Generate random resource group name
+resource "random_pet" "rg_name" {
+  prefix = var.resource_group_name_prefix
 }
 
-resource "azurerm_kubernetes_cluster" "aks" {
-  name                = "myAKSCluster"
-  location            = azurerm_resource_group.aks-rg.location
-  resource_group_name = azurerm_resource_group.aks-rg.name
-  dns_prefix          = "myaksdns"
+resource "azurerm_resource_group" "rg" {
+  location = var.resource_group_location
+  name     = random_pet.rg_name.id
+}
 
-  default_node_pool {
-    name                = "default"
-    node_count          = 1
-    vm_size             = "Standard_DS2_v2"
-  }
+resource "random_pet" "azurerm_kubernetes_cluster_name" {
+  prefix = "cluster"
+}
+
+resource "random_pet" "azurerm_kubernetes_cluster_dns_prefix" {
+  prefix = "dns"
+}
+
+resource "azurerm_kubernetes_cluster" "k8s" {
+  location            = azurerm_resource_group.rg.location
+  name                = random_pet.azurerm_kubernetes_cluster_name.id
+  resource_group_name = azurerm_resource_group.rg.name
+  dns_prefix          = random_pet.azurerm_kubernetes_cluster_dns_prefix.id
+
   identity {
     type = "SystemAssigned"
   }
-  #service_principal  {
-  #  client_id = "04ee7578-aff2-4cc1-8886-db4d3363ee5d"
-  #  client_secret = "oX68Q~ghruRuuByQxY2NfRA6PqSG3Dym6iaX7cxT"
-    
- # }
 
-  tags = {
-    environment = "dev"
+  default_node_pool {
+    name       = "agentpool"
+    vm_size    = "Standard_D2s_v3"
+    node_count = var.node_count
   }
-}
+  linux_profile {
+    admin_username = var.username
 
-#output "kubeconfig" {
-#  value = azurerm_kubernetes_cluster.aks.kube_config.0.client_config[0].kube_config
-#}
-output "cluster_name" {
-  value = azurerm_kubernetes_cluster.aks.name
+    ssh_key {
+      key_data = jsondecode(azapi_resource_action.ssh_public_key_gen.output).publicKey
+    }
+  }
+  network_profile {
+    network_plugin    = "kubenet"
+    load_balancer_sku = "standard"
+  }
 }
